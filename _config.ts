@@ -13,9 +13,6 @@ import gpm from "https://deno.land/x/gpm@v0.2.0/mod.ts";
 
 import windi from "https://deno.land/x/lume@v1.14.2/plugins/windi_css.ts";
 
-
-
-
 const site = lume({
   location: new URL("https://example.com/"),
 });

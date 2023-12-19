@@ -5,21 +5,38 @@ menu:
   title: Home
   order: 0
 ---
+<section class="bg-gray-50">
+  <div
+    class="mx-auto max-w-screen-xl px-4 py-32 lg:flex lg:h-screen lg:items-center"
+  >
+    <div class="mx-auto max-w-xl text-center">
+      <h1 class="text-3xl font-extrabold sm:text-5xl text-gray-600">
+        Off In Public
+        <strong class="font-extrabold text-cyan-500 sm:block">
+          Basketball in Reno, NV
+        </strong>
+      </h1>
 
-{% set postslist = search.pages("type=posts", "date=desc", 3) %}
+      <p class="mt-4 sm:text-xl/relaxed">
+        "Off in Public" is the #1 Amateur Basketball team in Reno, NV since 2021. <br> It's well known in Reno: <em>No one can beat "Off in Public".</em>
+      </p>
 
-<h1>Latest {% if postslist.length == 1 %}Post{% else %}{{ postslist.length }} Posts{% endif %}</h1>
+      <div class="mt-8 flex flex-wrap justify-center gap-4">
+        <a
+          class="block w-full rounded bg-cyan-500 px-12 py-3 text-sm font-medium text-white shadow hover:bg-cyan-600 focus:outline-none focus:ring active:bg-red-500 sm:w-auto"
+          href="/games"
+        >
+          View Games
+        </a>
 
-{% include "templates/postslist.njk" %}
+        <a
+          class="block w-full rounded px-12 py-3 text-sm font-medium text-cyan-600 shadow hover:text-cyan-700 focus:outline-none focus:ring active:text-red-500 sm:w-auto"
+          href="/awards"
+        >
+          View Awards
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
 
-<hr>
-
-{% set postslist  = search.pages("pinned=true") %}
-
-{%if postslist.length %}
-  <h2>Pinned Post:</h1>
-  {% include "templates/postslist.njk" %}
-  <hr>
-{% endif %}
-
-<p>More posts can be found in <a href="/posts/">the archive</a>.</p>

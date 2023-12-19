@@ -1,4 +1,12 @@
-<section class="bg-white dark:bg-gray-900">
+
+<ul class="postList">
+  {% for post in postslist %}
+	<!--
+  Heads up! 👋
+
+  Custom CSS:
+    - animate-background https://github.com/markmead/hyperui/blob/main/tailwind.preset.js
+-->
     <div class="container px-6 py-10 mx-auto">
         <h1 class="text-2xl font-semibold text-gray-800 capitalize lg:text-3xl dark:text-white">From the blog</h1>
 
@@ -8,8 +16,8 @@
             <div class="mt-6 lg:w-1/2 lg:mt-0 lg:mx-6 ">
                 <p class="text-sm text-blue-500 uppercase">category</p>
 
-                <a href="#" class="block mt-4 text-2xl font-semibold text-gray-800 hover:underline dark:text-white">
-                    All the features you want to know
+                <a href="{{ post.data.url }}" class="block mt-4 text-2xl font-semibold text-gray-800 hover:underline dark:text-white">
+                    {{ post.data.title }}
                 </a>
 
                 <p class="mt-3 text-sm text-gray-500 dark:text-gray-300 md:text-sm">
@@ -30,10 +38,7 @@
             </div>
         </div>
     </div>
-</section>
-<ul class="postList">
-  {% for post in postslist %}
-  <li class="postList-post">
+  {# <li class="postList-post">
     <a href="{{ post.data.url }}" class="postList-title"{% if entry.data.url == url %} aria-current="page"{% endif %}>
       {% if post.data.title %}
         <strong>{{ post.data.title }}</strong>
@@ -52,7 +57,7 @@
     <a href="{{ page.data.url  }}" class="tag">{{ tag }}</a>
     {% endif %}
     {% endfor %}
-  </li>
+  </li> #}
 {% endfor %}
 </ul>
 

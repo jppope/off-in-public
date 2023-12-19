@@ -1,5 +1,5 @@
 ---
-title: This is my fourth post.
+title: Off in Public vs H2O
 description: This is a post on My Blog about touchpoints and circling wagons.
 date: 2018-09-30
 tags:
