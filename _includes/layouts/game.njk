@@ -2,25 +2,36 @@
 layout: layouts/base.njk
 bodyClass: body-post
 ---
-<article class="post" data-pagefind-body>
-  <div class="post-header">
-    <h1 class="post-title">{{ title }}</h1>
+<style>  
+  .post-body table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1em 0;
+    border: 1px solid #d3d3d3;    
+  }
+  .post-body table th, .post-body table td {
+    padding: 0.5em;
+    border: 1px solid #d3d3d3;
+  }
+  </style>
+  <main class="pt-8 pb-16 lg:pt-16 lg:pb-24 bg-white dark:bg-gray-900 antialiased">
+    <div class="flex justify-between px-4 mx-auto max-w-screen-xl ">
+      <article class="mx-auto w-full max-w-2xl format format-sm sm:format-base lg:format-lg format-blue dark:format-invert" data-pagefind-body>
+        <div class="">
+          <h1 class="mb-4 text-3xl font-extrabold leading-tight text-gray-900 lg:mb-6 lg:text-4xl dark:text-white">
+            {{ title }}
+          </h1>
+          <time class="post-date" datetime="{{ date | date('DATETIME') }}">
+            {{ date | date('HUMAN_DATE') }}
+          </time>
+        </div>
 
-    <nav class="post-tags">
-    {% for tag in tags %}
-      <a href="/tags/{{ tag }}/" class="tag">{{ tag }}</a>
-    {% endfor %}
-    </nav>
-
-    <time class="post-date" datetime="{{ date | date('DATETIME') }}">
-      {{ date | date('HUMAN_DATE') }}
-    </time>
-  </div>
-
-  <div class="post-body">
-    {{ content | safe }}
-  </div>
-</article>
+        <div class="post-body">
+          {{ content | safe }}
+        </div>
+      </article>
+    </div>
+  </main>
 
 <hr>
 
