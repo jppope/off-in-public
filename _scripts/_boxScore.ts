@@ -204,8 +204,8 @@ async function processCsv(
   console.log("CSV file has been created.");
 }
 
-const inputFilePath = "./files/2024-03-06.csv";
-const outputFilePath = "./boxScores/2024-03-06.csv";
+const inputFilePath = "./files/2024-03-07.csv";
+const outputFilePath = "./boxScores/2024-03-07.csv";
 
 processCsv(inputFilePath, outputFilePath).then(() =>
   console.log("CSV processing complete.")
