@@ -11,25 +11,6 @@
     <link rel="alternate" href="/feed.json" type="application/json" title="{{ site.title }}">
   </head>
   <body>
-    {# <nav class="navbar">
-          <a href="/" class="navbar-home">
-            <strong>{{ site.title }}</strong>
-          </a>
-    
-          <ul class="navbar-links">
-          {%- for entry in search.pages("menu.visible=true", "menu.order") %}
-            <li>
-              <a href="{{ entry.data.url }}"{% if entry.data.url == url %} aria-current="page"{% endif %}>
-                {{ entry.data.menu.title or entry.data.title }}
-              </a>
-            </li>
-          {%- endfor %}
-          </ul>
-    
-          <div class="navbar-search">
-            <div id="search"></div>
-          </div>
-        </nav> #}
     <main>
       {{ content | safe }}
     </main>
