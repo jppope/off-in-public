@@ -4,17 +4,13 @@
   <br>
 <ul>
   {% for post in postslist %}
-    <li class="m-12 p-1 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+    <li class="mx-4 my-12 p-1 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
       <div class="container px-6 py-10 mx-auto">
         <div class="block rounded-lg bg-white shadow-secondary-1 dark:bg-surface-dark dark:text-white text-surface">
           <div class="relative overflow-hidden bg-cover bg-no-repeat">
             <iframe class="w-full h-96" src="{{ post.data.videos[0] }}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
           </div>
-          <div
-            class="p-6">
-            {# <h5 class="mb-2 text-xl font-medium leading-tight">
-                      Card title
-                    </h5> #}
+          <div class="p-6">
             <a href="{{ post.data.url }}" class="mt-2 text-2xl font-semibold leading-tight text-gray-800 dark:text-white hover:underline">
               <h1 class="max-w-lg mt-4 text-2xl font-semibold leading-tight text-gray-800 dark:text-white">
                 {{ post.data.title }}
