@@ -126,7 +126,7 @@ async function processCsv(
         stats["ft_attempts"]++;
         break;
       case "ft_made":
-        stats.points += 2;
+        stats.points += 1;
         // stats["ft_attempts"]++;
         stats["ft_made"]++;
         break;
@@ -204,8 +204,8 @@ async function processCsv(
   console.log("CSV file has been created.");
 }
 
-const inputFilePath = "./files/2024-03-07.csv";
-const outputFilePath = "./boxScores/2024-03-07.csv";
+const inputFilePath = "./files/2024-03-14.csv";
+const outputFilePath = "./boxScores/2024-03-14.csv";
 
 processCsv(inputFilePath, outputFilePath).then(() =>
   console.log("CSV processing complete.")
