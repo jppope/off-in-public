@@ -1,5 +1,4 @@
 import { parse, stringify } from "https://deno.land/std@0.219.0/csv/mod.ts";
-import { init } from "https://dev.jspm.io/npm:@jspm/core@2.0.1/nodelibs/events";
 
 // Check if you need to specify headers explicitly for your CSV library
 interface PlayerStats {
