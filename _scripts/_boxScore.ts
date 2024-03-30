@@ -1,7 +1,9 @@
 import { parse, stringify } from "https://deno.land/std@0.219.0/csv/mod.ts";
+import { TrueShooting, playerEfficiencyRating } from "./_utils.ts";
 
 // Check if you need to specify headers explicitly for your CSV library
 interface PlayerStats {
+  minutes: number;
   points: number;
   rebounds: number;
   "2pt_attempts": number;
@@ -22,6 +24,7 @@ interface PlayerStats {
 
 function PlayerStats() {
   return {
+    minutes: 0,
     PlayerEfficiencyRating: 0,
     points: 0,
     rebounds: 0,
@@ -43,34 +46,7 @@ function PlayerStats() {
   };
 }
 
-function TrueShooting(points: number, fga: number, fta: number): string {
-  if (fga + fta === 0) {
-    return "N/A"; // Avoid division by zero; applicable if no attempts are made.
-  }
 
-  const tsp = (points / (2 * (fga + 0.44 * fta))) * 100;
-  return tsp.toFixed(2) + '%'; // Returns the TSP as a percentage string rounded to two decimal places.
-}
-
-function playerEfficiencyRating(stats: PlayerStats): number {
-  // Calculate missed shots: Total attempts minus total made shots
-  const missedShots = stats["2pt_attempts"] + stats["3pt_attempts"];
-
-  // Calculate the divisor to avoid division by zero. This represents the total impact actions.
-  const divisor = stats.points + missedShots + stats.turnovers;
-
-  if (divisor <= 0) {
-    return 0;
-  }
-
-  const rawPer = (stats.points + stats.rebounds + stats.assists + stats.steals + stats.blocks - missedShots - stats.turnovers) / divisor;
-
-  // Introduce a scaling factor to adjust the PER range
-  const scale = 15; // This is a placeholder; adjust based on your data set and desired range
-  const scaledPer = rawPer * scale;
-
-  return scaledPer;
-}
 
 
 async function processCsv(
@@ -129,11 +105,11 @@ async function processCsv(
         // stats["ft_attempts"]++;
         stats["ft_made"]++;
         break;
-      case "offensive_rebound":
+      case "offensive_rebound" || "oreb":
         stats.offensive_rebounds++;
         stats.rebounds++;
         break;
-      case "defensive_rebound":
+      case "defensive_rebound" || "dreb":
         stats.defensive_rebounds++;
         stats.rebounds++;
         break;
@@ -158,15 +134,14 @@ async function processCsv(
   });
 
   Object.values(playerStats).forEach((stats) => {
-    stats.eFG = ((stats["2pt_made"] + stats["3pt_made"]) > 0) ? ((stats["2pt_made"] + 1.5 * stats["3pt_made"]) / (stats["2pt_made"] + stats["2pt_attempts"] + stats["3pt_made"] + stats["3pt_attempts"])) : 0;
-    // stats.trueFG = ((stats["2pt_made"] + stats["2pt_attempts"] + stats["3pt_made"] + stats["3pt_attempts"]+ (0.44 * stats["3pt_made"] + stats["3pt_attempts"])) > 0) ? (stats.points / (2 * (stats["2pt_attempts"] + stats["3pt_attempts"] + 0.44 * stats["3pt_attempts"]))) : 0;
+    stats.eFG = ((stats["2pt_made"] + stats["3pt_made"]) > 0) ? ((stats["2pt_made"] + 1.5 * stats["3pt_made"]) / (stats["2pt_made"] + stats["2pt_attempts"] + stats["3pt_made"] + stats["3pt_attempts"])) : 0;    
     const fga = stats["2pt_attempts"] + stats["2pt_made"] + stats["3pt_attempts"] + stats["3pt_made"];
     stats.trueShooting = TrueShooting(stats.points, fga, stats["ft_attempts"] + stats["ft_made"]) 
     stats.PER = playerEfficiencyRating(stats);
   });
   
 
-  
+
   // Prepare CSV content
   const headers = [
     "player",
@@ -203,8 +178,8 @@ async function processCsv(
   console.log("CSV file has been created.");
 }
 
-const inputFilePath = "./files/2024-03-14.csv";
-const outputFilePath = "./boxScores/2024-03-14.csv";
+const inputFilePath = "./files/2024-03-27.csv";
+const outputFilePath = "./boxScores/2024-03-27.csv";
 
 processCsv(inputFilePath, outputFilePath).then(() =>
   console.log("CSV processing complete.")
