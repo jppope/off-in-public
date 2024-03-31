@@ -17,8 +17,9 @@ async function processCsv(
 
 
   const stats = buildTeamStats(events);
-  // const minutes = calculateAllPlayTimes(events);
-  // console.log(minutes);
+  const minutes = calculateAllPlayTimes(events);
+  console.log(minutes);
+  return
 
   function AdvancedStats(playerStats: any){
     const players = Object.entries(playerStats)
