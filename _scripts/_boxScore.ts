@@ -34,8 +34,8 @@ async function processCsv(
     return playerStats;
   }
   const offInPublicStats = AdvancedStats(stats.offInPublic);
-  AdvancedStats(stats.away);
-  
+  const awayStats = AdvancedStats(stats.away);
+
   // Prepare CSV content
   const headers = [
     "player",
@@ -66,9 +66,19 @@ async function processCsv(
     csvString += row + "\n";
   }
 
+  console.log("\n");
+
+  for (const [player, stats] of Object.entries(awayStats)) {
+    const row = [
+      player,
+      ...headers.slice(1).map((header) => stats[header]?.toString() || "0"),
+    ].join(",");
+    console.log(row);
+    csvString += row + "\n";
+  }
 
   // Writing the CSV string to a file
-  await Deno.writeTextFile(outputFilePath, csvString);
+  // await Deno.writeTextFile(outputFilePath, csvString);
   console.log("CSV file has been created.");
 }
 
