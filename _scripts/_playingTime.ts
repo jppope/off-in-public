@@ -1,11 +1,9 @@
-export interface Event {
+type Event = {
   half: number;
   time: string; // Format "MM:SS:XXX"
   team: string;
   player: string;
   event: string;
-  against?: string;
-  notes?: string;
 };
 
 function convertTimeToMinutes(time: string): number {
@@ -24,56 +22,57 @@ function isolatePlayerEvents(events: Event[]): Record<string, Event[]> {
       } else {
           // For global events like timeouts, add them to all players' event lists
           Object.keys(playerEvents).forEach(player => {
-              playerEvents[player].push(event);
+              playerEvents[player].push({...event, player}); // Mark global events with player's name for uniform processing
           });
       }
   });
 
-  // Sort events for each player by time
+  // Sort events for each player by time and half
   Object.values(playerEvents).forEach(playerEventList => {
-      playerEventList.sort((a, b) => convertTimeToMinutes(a.time) - convertTimeToMinutes(b.time));
+      playerEventList.sort((a, b) => a.half !== b.half ? a.half - b.half : convertTimeToMinutes(a.time) - convertTimeToMinutes(b.time));
   });
 
   return playerEvents;
 }
 
-function calculatePlayerPlayTime(playerEvents: Event[]): number {
-  let totalMinutes = 0;
+function calculatePlayerPlayTime(playerEvents: Event[]): { total: number; byHalf: Record<number, number> } {
+  let totalTime = 0;
+  const timeByHalf: Record<number, number> = {};
   let lastCheckInTime = 0;
   let inPlay = false;
-  let timeouts = [];
+  let currentHalf = 0;
 
   playerEvents.forEach(event => {
       const currentTime = convertTimeToMinutes(event.time);
-      if (event.event === 'checked_in' && !inPlay) {
+      if (event.event === 'checked_in') {
           lastCheckInTime = currentTime;
           inPlay = true;
+          currentHalf = event.half;
       } else if (event.event === 'checked_out' && inPlay) {
-          totalMinutes += currentTime - lastCheckInTime - timeouts.reduce((acc, cur) => acc + cur, 0);
+          const playTime = currentTime - lastCheckInTime;
+          totalTime += playTime;
+          timeByHalf[currentHalf] = (timeByHalf[currentHalf] || 0) + playTime;
           inPlay = false;
-          timeouts = []; // Reset timeouts after calculating playtime
-      } else if (event.event === 'timeout' && inPlay) {
-          // Record timeout start
-          timeouts.push(-currentTime);
-      } else if (event.event === 'timestart' && timeouts.length > 0) {
-          // End the last timeout period
-          timeouts[timeouts.length - 1] += currentTime;
       }
   });
 
-  // Handle edge case where player does not check out
+  // Handle edge case for player not checking out
   if (inPlay) {
-      console.log(`Player did not check out. Assuming end of last event as checkout.`);
-      const lastEventTime = convertTimeToMinutes(playerEvents[playerEvents.length - 1].time);
-      totalMinutes += lastEventTime - lastCheckInTime - timeouts.reduce((acc, cur) => acc + cur, 0);
+      console.log(`Player ${playerEvents[0].player} did not check out from half ${currentHalf}.`);
+      // Assume end of the half for checkout, typically 20 minutes per half in format MM:SS:XXX
+      const assumedCheckoutTime = 20;
+      const playTime = assumedCheckoutTime - lastCheckInTime;
+      totalTime += playTime;
+      timeByHalf[currentHalf] = (timeByHalf[currentHalf] || 0) + playTime;
   }
 
-  return totalMinutes;
+  return { total: totalTime, byHalf: timeByHalf };
 }
 
-export function calculateAllPlayTimes(events: Event[]): Record<string, number> {
+export function calculateAllPlayTimes(events: Event[]): Record<string, { total: number; byHalf: Record<number, number> }> {
   const isolatedEvents = isolatePlayerEvents(events);
-  const playTimes: Record<string, number> = {};
+  console.log(isolatedEvents)
+  const playTimes: Record<string, { total: number; byHalf: Record<number, number> }> = {};
 
   Object.keys(isolatedEvents).forEach(player => {
       playTimes[player] = calculatePlayerPlayTime(isolatedEvents[player]);
