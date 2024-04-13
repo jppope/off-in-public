@@ -1,4 +1,5 @@
 import { Event } from "./_playingTime.ts";
+import { Stats } from "./stats.t.ts";
 
 // Check if you need to specify headers explicitly for your CSV library
 export interface PlayerStats {
@@ -9,6 +10,8 @@ export interface PlayerStats {
   "2pt_made": number;
   "3pt_attempts": number;
   "3pt_made": number;
+  "ft_attempts": number;
+  "ft_made": number;
   eFG: number;
   trueShooting: number;
   offensive_rebounds: number;
@@ -46,7 +49,7 @@ export function PlayerStats() {
   };
 }
 
-export function buildEvents(column_names: any, rows: any) : Event[] {
+export function getEvents(column_names: any, rows: any) : Event[] {
   const events: Event[] = [];
 
   for (let i = 0; i < rows.length; i++) {
@@ -193,4 +196,18 @@ export function playerEfficiencyRating(stats: PlayerStats): number {
   const scaledPer = rawPer * scale;
 
   return scaledPer;
+}
+
+export function AdvancedStats(playerStats: Stats){
+  const players = Object.entries(playerStats)
+  for(let i = 0; i < players.length; i++){
+    const [player, stats] = players[i];
+    console.log(player, stats)
+    stats.eFG = ((stats["2pt_made"] + stats["3pt_made"]) > 0) ? ((stats["2pt_made"] + 1.5 * stats["3pt_made"]) / (stats["2pt_made"] + stats["2pt_attempts"] + stats["3pt_made"] + stats["3pt_attempts"])) : 0;    
+    const fga = stats["2pt_attempts"] + stats["2pt_made"] + stats["3pt_attempts"] + stats["3pt_made"];
+    // stats.trueShooting = TrueShooting(stats.points, fga, stats["ft_attempts"] + stats["ft_made"]) 
+    stats.PER = playerEfficiencyRating(stats);
+    playerStats[player] = stats;
+  };
+  return playerStats;
 }

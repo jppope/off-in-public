@@ -1,39 +1,22 @@
 import { parse } from "https://deno.land/std@0.219.0/csv/mod.ts";
-import { buildEvents, TrueShooting, playerEfficiencyRating } from "./_utils.ts";
-import { PlayerStats, buildTeamStats } from "./_utils.ts";
-import { Event, calculateAllPlayTimes } from "./_playingTime.ts";
+import { getEvents } from "./_utils.ts";
+import { buildTeamStats, AdvancedStats } from "./_utils.ts";
+import { calculateAllPlayTimes } from "./_playingTime.ts";
+import { Stats } from "./stats.t.ts";
 
 async function processCsv(
   inputFilePath: string,
   outputFilePath: string,
-): Promise<void> {
+): Promise<any> {
   const content = await Deno.readTextFile(inputFilePath);
   const rows: any[] = await parse(content);
   const column_names = rows.shift();
 
-  const events = buildEvents(column_names, rows);
-  
-  console.log(events);
-
-
+  const events = getEvents(column_names, rows);
   const stats = buildTeamStats(events);
   const minutes = calculateAllPlayTimes(events);
   console.log(minutes);
-  return
 
-  function AdvancedStats(playerStats: any){
-    const players = Object.entries(playerStats)
-    for(let i = 0; i < players.length; i++){
-      const [player, stats] = players[i];
-      console.log(player, stats)
-      stats.eFG = ((stats["2pt_made"] + stats["3pt_made"]) > 0) ? ((stats["2pt_made"] + 1.5 * stats["3pt_made"]) / (stats["2pt_made"] + stats["2pt_attempts"] + stats["3pt_made"] + stats["3pt_attempts"])) : 0;    
-      const fga = stats["2pt_attempts"] + stats["2pt_made"] + stats["3pt_attempts"] + stats["3pt_made"];
-      // stats.trueShooting = TrueShooting(stats.points, fga, stats["ft_attempts"] + stats["ft_made"]) 
-      stats.PER = playerEfficiencyRating(stats);
-      playerStats[player] = stats;
-    };
-    return playerStats;
-  }
   const offInPublicStats = AdvancedStats(stats.offInPublic);
   const awayStats = AdvancedStats(stats.away);
 
@@ -46,6 +29,8 @@ async function processCsv(
     "2pt_made",
     "3pt_attempts",
     "3pt_made",
+    "ft_attempts",
+    "ft_made",
     "eFG",
     "trueShooting",
     "offensive_rebounds",
@@ -56,6 +41,7 @@ async function processCsv(
     "turnovers",
     "PER",
   ];
+
   let csvString = headers.join(",") + "\n";
 
   for (const [player, stats] of Object.entries(offInPublicStats)) {
@@ -78,14 +64,13 @@ async function processCsv(
     csvString += row + "\n";
   }
 
-  // Writing the CSV string to a file
-  // await Deno.writeTextFile(outputFilePath, csvString);
-  console.log("CSV file has been created.");
+  return csvString;
 }
 
-const inputFilePath = "./files/2024-03-27.csv";
-const outputFilePath = "./boxScores/2024-03-27.csv";
+const inputFilePath = "./files/2024-04-03.csv";
+const outputFilePath = "./boxScores/2024-04-03.csv";
 
-processCsv(inputFilePath, outputFilePath).then(() =>
-  console.log("CSV processing complete.")
-);
+processCsv(inputFilePath, outputFilePath)
+  .then((csv) =>  Deno.writeTextFile(outputFilePath, csv))
+  .then(() => console.log("CSV processing complete."))
+  .catch((error) => console.error(error));
