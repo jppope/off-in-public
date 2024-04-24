@@ -1,6 +1,6 @@
 ---
 title: Off in Public vs Team
-description: "City League Basketball game. Starting line up: Pope, Ev, Jeff, Joey, Eli"
+description: "City League Basketball game. Starting line up: Pope, Ev, Jeff, Kelo, Dom"
 date: 2024-03-06
 videos:
   - https://www.youtube.com/embed/jSLxuMISOQw?si=F5A4y_D4nZlFDnkI
@@ -8,6 +8,8 @@ videos:
 ---
 
 [link to Spreadsheet](https://docs.google.com/spreadsheets/d/1hvrR9tP2FrgPk3crtaIiUiTTUyudCqRBdwB7GSgAmvU/edit?usp=sharing)
+
+<h2 id="videos" class="max-w-lg mt-4 text-2xl font-semibold leading-tight text-gray-800 dark:text-white"> Videos </h2>
 
 <h2 id="box-score" class="max-w-lg mt-4 text-2xl font-semibold leading-tight text-gray-800 dark:text-white"> Box Score </h2>
 
