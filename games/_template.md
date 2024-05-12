@@ -13,5 +13,4 @@ videos:
 
 <h2 id="box-score" class="max-w-lg mt-4 text-2xl font-semibold leading-tight text-gray-800 dark:text-white"> Box Score </h2>
 
-
 <h2 id="play-by-play" class="max-w-lg mt-4 text-2xl font-semibold leading-tight text-gray-800 dark:text-white"> Play by Play </h2>
