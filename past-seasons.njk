@@ -1,0 +1,41 @@
+---
+layout: layouts/alt.njk
+menu:
+  visible: true
+  title: Home
+  order: 0
+---
+
+{% set postslist = search.pages("type=past-seasons", "date=desc", 10) %}
+
+{% include "templates/postslist.njk" %}
+
+<div class="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center hidden" id="videoModal">
+  <div class="relative">
+    <button class="absolute top-0 right-0 text-white text-2xl p-4" id="closeModal">&times;</button>
+    <iframe width="1120" height="630" 
+    src="" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const videoThumbnail = document.getElementById('videoThumbnail');
+    const videoModal = document.getElementById('videoModal');
+    const closeModal = document.getElementById('closeModal');
+    const video = videoModal.querySelector('video');
+
+    videoThumbnail.addEventListener('click', function () {
+      videoModal.classList.remove('hidden');
+      video.play();
+    });
+
+    closeModal.addEventListener('click', function () {
+      videoModal.classList.add('hidden');
+      video.pause();
+      video.currentTime = 0; // Optional: reset video to start
+    });
+  });
+</script>
+
+<p>More posts can be found in <a href="/posts/">the archive</a>.</p>
