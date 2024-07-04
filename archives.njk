@@ -6,7 +6,7 @@ menu:
   order: 0
 ---
 
-{% set postslist = search.pages("type=past-seasons", "date=desc", 10) %}
+{% set postslist = search.pages("type=archive", "date=desc", 10) %}
 
 {% include "templates/postslist.njk" %}
 
