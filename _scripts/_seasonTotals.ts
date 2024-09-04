@@ -1,136 +1,107 @@
 import { parse } from "https://deno.land/std@0.219.0/csv/mod.ts";
-import { a } from "https://dev.jspm.io/npm:@jspm/core@2.0.1/_/a421dfba.js";
+import { getEvents } from "./_utils.ts";
+import { AdvancedStats, buildTeamStats, PlayerStats, assignMinutes } from "./_utils.ts";
 
-const a_team = [    
-    '2024-03-06',
-    '2024-03-13',
-    '2024-03-20',
-    '2024-03-27',
-    '2024-04-03',
-    '2024-04-10',
-    '2024-04-17',
-    '2024-04-24',
-    '2024-05-01',
-    '2024-05-08',
-    '2024-05-15',
-]
+const team = [];
 
-const b_team = [
-    '2024-03-07',
-    '2024-03-14',
-    '2024-03-21',
-    '2024-03-28',
-    '2024-04-04',
-    '2024-04-11',
-    '2024-04-18',
-    '2024-04-25',
-    '2024-05-02',
-    '2024-05-09',
-    '2024-05-16',    
-]
+async function processCsv(
+  target: string,
+): Promise<any> {
+  const content = await Deno.readTextFile(`./files/${target}.csv`);
 
-// Function to read all files in a specified directory and parse them as CSV
-async function readAndParseCSVFiles(directory: string): Promise<any[]> {
-    const a_team_data: any[] = [];
-    const b_team_data: any[] = [];
+  const rows: any[] = await parse(content);
+  const column_names = rows.shift();
+  const events = getEvents(column_names, rows);
+  const stats = buildTeamStats(events, target);
+  const statsWithMinutes = assignMinutes(stats.offInPublic);
+  const advancedStats = AdvancedStats(statsWithMinutes);
 
-    const columns = []
+  // turn stats into jsonl, add player: name, game: date
+  return Object.entries(advancedStats).map(([player, stats]) => {
+    return {
+      player,
+      game: target,
+      ...stats,
+    };
+  });
+}
 
-    // Loop through all entries in the directory
-    for await (const entry of Deno.readDir(directory)) {
-        if (entry.isFile && entry.name.endsWith('.csv')) {
-            const date = entry.name.split('.csv')[0];
-            const filePath = `${directory}/${entry.name}`;
-            const content = await Deno.readTextFile(filePath);
-            // console.log(content);
-            try {
-                const rows: any[] = await parse(content);
-                const column_names = rows.shift();
-                // add new headers to the headers array, make into a set
-                columns.push(...column_names);                
-                // console.log(columns);
-                const parsedData = rows.map(row => {
-                    const obj = {};
-                    for (let i = 0; i < column_names.length; i++) {
-                        obj[column_names[i]] = row[i];
-                    }
-                    // add a property of minutes to the object. all records should have 27 minutes
-                    obj['min'] = 27;
-                    return obj;
-                });
+const writeBoxScore = async (directory: string, game: string, data: any) => {
+  // Prepare season directory
+  try {
+    Deno.statSync(directory);
+  } catch (_e) {
+    await Deno.mkdir(directory);
+  }
 
-                if(a_team.includes(date)){
-                    a_team_data.push(parsedData);
-                }
+  const headers = Object.keys(data[0]);
+  let csvString = headers.join(",") + "\n";
 
-                if(b_team.includes(date)){
-                    b_team_data.push(parsedData);
-                }
+  for (const stats of data) {
+    const row = headers.map((header) => {
+      // if minutes are 0 make the default 15
+      if (header === "minutes" && stats[header] === 0) {
+        stats[header] = 15;
+      }
+      return stats[header].toString();
+    });
+    csvString += row.join(",") + "\n";
+  }
 
-            } catch (error) {
-                console.error(`Error parsing ${entry.name}: ${error.message}`);
-            }
+  const seasonOutputFilePath = `boxScores/${game}.csv`;
+  await Deno.writeTextFile(seasonOutputFilePath, csvString);
+};
+
+const processGames = async (directory: string, start: string, end: string) => {
+  let allBoxScores: any = [];
+
+  for await (const dirEntry of Deno.readDir(directory)) {
+    if (dirEntry.isFile) {
+      const [game, mimeType] = dirEntry.name.split(".");
+
+      const gameDate = new Date(game);
+      const startSeason = new Date(start);
+      const endSeason = new Date(end);
+
+      if (gameDate < startSeason || gameDate > endSeason) continue;
+
+      if (mimeType === "csv") {
+        let records = [] 
+        try {
+         records = await processCsv(game)
+         writeBoxScore("./boxScores", game, records);
+        } catch (e) {
+            console.error(e);
         }
+        allBoxScores = allBoxScores.concat(records);
+      }
+    }  
+  }
+  console.log("=====");
+  console.log("boxscore lines", allBoxScores.length);
+  const team = {};
+  for(const record of allBoxScores){
+    if(!team[record.player]){
+      team[record.player] = PlayerStats();
+      team[record.player]['gamesPlayed'] = 1;
     }
+    for(const key of Object.keys(record)){
+      if(!["player", "game", "PER","PlayerEfficiencyRating","eFG"].includes(key)){
+        team[record.player][key] += record[key];
+      }
+    }
+    team[record.player]['gamesPlayed'] += 1;
+  }
+  // calculate advanced stats for the team
+    const advancedStats = AdvancedStats(team);
+    // console.log("=====");
+    // console.log("Team Advanced Stats");
+    console.log(advancedStats);
+  
+};
 
-    // make sure headers are a set/unique
-    const headers = new Set(columns);    
-    console.log(headers);
-
-    const playerStats: { [key: string]: any } = {}
-
-    a_team_data
-        .flat()
-        .forEach(row => {
-            const player = row['player'];
-            if (!playerStats[player]) {
-                playerStats[player] = {
-                    minutes: 0,
-                    points: 0,
-                    rebounds: 0,
-                    "2pt_attempts": 0,
-                    "2pt_made": 0,
-                    "3pt_attempts": 0,
-                    "3pt_made": 0,
-                    eFG: 0,
-                    trueShooting: 0,
-                    offensive_rebounds: 0,
-                    defensive_rebounds: 0,
-                    assists: 0,
-                    steals: 0,
-                    blocks: 0,
-                    turnovers: 0,
-                    PER: 0,
-                };
-            }
-            playerStats[player].minutes += parseInt(row['min'], 10);
-            playerStats[player].points += parseInt(row['points'], 10);
-            playerStats[player].rebounds += parseInt(row['rebounds'], 10);
-            playerStats[player]["2pt_attempts"] += parseInt(row['2pt_attempts'], 10);
-            playerStats[player]["2pt_made"] += parseInt(row['2pt_made'], 10);
-            playerStats[player]["3pt_attempts"] += parseInt(row['3pt_attempts'], 10);
-            playerStats[player]["3pt_made"] += parseInt(row['3pt_made'], 10);
-            // free throws
-            playerStats[player]["ft_attempts"] += parseInt(row['ft_attempts'], 10);
-            playerStats[player]["ft_made"] += parseInt(row['ft_made'], 10);
-            playerStats[player].offensive_rebounds += parseInt(row['oreb'] || row['offensive_rebounds'], 10);
-            playerStats[player].defensive_rebounds += parseInt(row['dreb'] || row['defensive_rebounds'], 10);
-            playerStats[player].assists += parseInt(row['assists'], 10);
-            playerStats[player].steals += parseInt(row['steals'], 10);
-            playerStats[player].blocks += parseInt(row['blocks'], 10);
-            playerStats[player].turnovers += parseInt(row['turnovers'], 10);
-        });
-    console.log(playerStats);
-
-    return playerStats
-}
-
-// Main function to process the data
-async function processCSVFiles(directory: string) {
-    const parsedFiles = await readAndParseCSVFiles(directory);
-    // console.log(parsedFiles); // This will log the parsed data from all CSV files
-}
-
-
-// Replace '/path/to/your/csv/directory' with the actual directory path
-processCSVFiles('./boxScores');
+const directory = "./files";
+// season start/end dates
+const start = "2024-06-20";
+const end = "2024-09-30";
+processGames(directory, start, end);

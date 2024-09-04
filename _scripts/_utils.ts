@@ -1,6 +1,56 @@
 import { Event } from "./_playingTime.ts";
 import { Stats } from "./stats.t.ts";
 
+export const headers = [
+  "player",
+  "points",
+  "rebounds",
+  "2pt_attempts",
+  "2pt_made",
+  "3pt_attempts",
+  "3pt_made",
+  "ft_attempts",
+  "ft_made",
+  "eFG",
+  "trueShooting",
+  "offensive_rebounds",
+  "defensive_rebounds",
+  "assists",
+  "steals",
+  "blocks",
+  "turnovers",
+  "PER",
+];
+
+const roster = [
+  "pope",
+  "ev",
+  "kelo",
+  "chosen",
+  "dom",
+  "eman",
+  "chris",
+  "nick",
+  "jared",
+  "trev",
+  "cordell",
+  "dylan",
+  "norm",
+  "tariq",
+  "tyriq",
+  "riq",
+  "riq2",
+  "cheihk",
+  "ryan",
+  "jeff",
+  "joey",
+  "josh",
+  "jason",
+  "eman's guy",
+  "cordell's buddy",
+  "---"
+]
+
 // Check if you need to specify headers explicitly for your CSV library
 export interface PlayerStats {
   minutes: number;
@@ -26,8 +76,7 @@ export interface PlayerStats {
 
 export function PlayerStats() {
   return {
-    minutes: 0,
-    PlayerEfficiencyRating: 0,
+    minutes: 0,    
     points: 0,
     rebounds: 0,
     "2pt_attempts": 0,
@@ -68,7 +117,7 @@ export function getEvents(column_names: any, rows: any) : Event[] {
   return events;
 }
 
-export function buildTeamStats(events: any[]) {
+export function buildTeamStats(events: any[], game: string) : Record<string, Record<string, PlayerStats>> {
   // Create a dictionary to store player stats
   const teamStats: Record<string, Record<string, PlayerStats>> = {
     offInPublic: {},
@@ -77,95 +126,146 @@ export function buildTeamStats(events: any[]) {
 
   for (let i = 0; i < events.length; i++) {
     const row = events[i];
+    switch (row.team) {
+      case "Off in Public":
+        row.team = 0;
+        break;
+      case "off in public":
+        row.team = 0;
+        break;
+      case "0":
+        row.team = 0;
+        break;
+      case 0:
+        row.team = 0;
+        break;       
+      case "Away":
+        row.team = 1;
+        break;
+      case "1":
+        row.team = 1;
+        break;
+      case 1:
+        row.team = 1;
+        break;                   
+      default:
+        row.team = 1;
+        // console.log(`Unknown team: ${row.team}`);
+    }
 
-    // which team?
-    const team = `${row.team}`.toLowerCase() === "off in public" ? "offInPublic" : "away";
+    const team = row.team === 0 ? "offInPublic" : "away";
+    
     const player: string = row.player.toLowerCase().trim();
+    if (player === "3pt_made") {
+      console.log(`Game: ${game} | '${player}' was not found in the roster. ${JSON.stringify(row)}`)
+    }
+
+    if(!roster.includes(player) && team === "offInPublic"){
+      console.log(`Game: ${game} | '${player}' was not found in the roster. ${JSON.stringify(row)}`)
+    }
 
     if (!teamStats[team][player]) {
       teamStats[team][player] = PlayerStats();
     }
 
-    if (row.event === "2pt_attempt") {
+    if (row.event.trim() === "2pt_attempt") {
       teamStats[team][player]["2pt_attempts"]++;
     }
 
-    if (row.event === "2pt_made") {
+    if (row.event.trim() === "2pt_made") {
       teamStats[team][player]["points"] += 2;
       teamStats[team][player]["2pt_made"]++;
     }
 
-    if (row.event === "3pt_attempt") {
+    if (row.event.trim() === "3pt_attempt") {
       teamStats[team][player]["3pt_attempts"]++;
     }
 
-    if (row.event === "3pt_made") {
+    if (row.event.trim() === "3pt_made") {
       teamStats[team][player]["points"] += 3;
       teamStats[team][player]["3pt_made"]++;
     }
 
-    if (row.event === "ft_attempt") {
+    if (row.event.trim() === "ft_attempt") {
       teamStats[team][player]["ft_attempts"]++;
     }
 
-    if (row.event === "ft_made") {
+    if (row.event.trim() === "ft_made") {
       teamStats[team][player]["points"] += 1;
       teamStats[team][player]["ft_made"]++;
     }
 
-    if (row.event === "offensive_rebound" || row.event === "oreb") {
+    if (row.event.trim() === "offensive_rebound" || row.event.trim() === "oreb") {
       teamStats[team][player]["offensive_rebounds"]++;
       teamStats[team][player]["rebounds"]++;
     }
 
-    if (row.event === "defensive_rebound" || row.event === "dreb") {
+    if (row.event.trim() === "defensive_rebound" || row.event.trim() === "dreb") {
       teamStats[team][player]["defensive_rebounds"]++;
       teamStats[team][player]["rebounds"]++;
     }
 
-    if (row.event === "assist") {
+    if (row.event.trim() === "assist") {
       teamStats[team][player]["assists"]++;
     }
 
-    if (row.event === "steal") {
+    if (row.event.trim() === "steal") {
       teamStats[team][player]["steals"]++;
     }
 
-    if (row.event === "block") {
+    if (row.event.trim() === "block") {
       teamStats[team][player]["blocks"]++;
     }
 
-    if (row.event === "turnover") {
+    if (row.event.trim() === "turnover") {
       teamStats[team][player]["turnovers"]++;
     }
 
-    if (row.event === "foul") {
+    if (row.event.trim() === "foul") {
       teamStats[team][player]["fouls"]++;
     }
 
+    if (row.event.trim() === "charge") {
+      console.log("charge")
+    }
+
     if (
-      row.event !== "2pt_attempt" &&
-      row.event !== "2pt_made" &&
-      row.event !== "3pt_attempt" &&
-      row.event !== "3pt_made" &&
-      row.event !== "ft_attempt" &&
-      row.event !== "ft_made" &&
-      row.event !== "offensive_rebound" &&
-      row.event !== "oreb" &&
-      row.event !== "defensive_rebound" &&
-      row.event !== "dreb" &&
-      row.event !== "assist" &&
-      row.event !== "steal" &&
-      row.event !== "block" &&
-      row.event !== "turnover" &&
-      row.event !== "foul"
+      row.event.trim() !== "2pt_attempt" &&
+      row.event.trim() !== "2pt_made" &&
+      row.event.trim() !== "3pt_attempt" &&
+      row.event.trim() !== "3pt_made" &&
+      row.event.trim() !== "ft_attempt" &&
+      row.event.trim() !== "ft_made" &&
+      row.event.trim() !== "offensive_rebound" &&
+      row.event.trim() !== "oreb" &&
+      row.event.trim() !== "defensive_rebound" &&
+      row.event.trim() !== "dreb" &&
+      row.event.trim() !== "assist" &&
+      row.event.trim() !== "steal" &&
+      row.event.trim() !== "block" &&
+      row.event.trim() !== "turnover" &&
+      row.event.trim() !== "foul" &&
+      row.event.trim() !== "---" &&
+      row.event.trim() !== "charge"
     ) {
-      console.log(`Unknown event: ${row.event}`);
+      console.log(`Unknown event: ${Object.entries(row).join(", ")}`);
+      // throw new Error(`Unknown event: ${row.event}`);
     }
   }
-
+  delete teamStats.offInPublic["---"];
   return teamStats;
 }
+
+export const assignMinutes = (stats: any) => {
+  const numberOfPlayers = Object.keys(stats).length;
+  const totalMinutes = 200;
+  const minutesPerPlayer = parseInt((totalMinutes / numberOfPlayers).toFixed(0)) + 1;
+  const statsWithMinutes = {};
+  for (const player in stats) {
+    statsWithMinutes[player] = { ...stats[player], minutes: minutesPerPlayer };
+  }
+  return statsWithMinutes;
+};
 
 export function TrueShooting(points: number, fga: number, fta: number): string {
   if (fga + fta === 0) {
@@ -177,6 +277,11 @@ export function TrueShooting(points: number, fga: number, fta: number): string {
 }
 
 export function playerEfficiencyRating(stats: PlayerStats): number {
+  
+  if(stats.minutes <= 0){
+    console.log(`Player: ${stats.player} has 0 minutes`)
+  }
+
   // Calculate missed shots: Total attempts minus total made shots
   const missedShots = stats["2pt_attempts"] + stats["3pt_attempts"];
 
@@ -202,7 +307,7 @@ export function AdvancedStats(playerStats: Stats){
   const players = Object.entries(playerStats)
   for(let i = 0; i < players.length; i++){
     const [player, stats] = players[i];
-    console.log(player, stats)
+    // console.log(player, stats)
     stats.eFG = ((stats["2pt_made"] + stats["3pt_made"]) > 0) ? ((stats["2pt_made"] + 1.5 * stats["3pt_made"]) / (stats["2pt_made"] + stats["2pt_attempts"] + stats["3pt_made"] + stats["3pt_attempts"])) : 0;    
     const fga = stats["2pt_attempts"] + stats["2pt_made"] + stats["3pt_attempts"] + stats["3pt_made"];
     // stats.trueShooting = TrueShooting(stats.points, fga, stats["ft_attempts"] + stats["ft_made"]) 
