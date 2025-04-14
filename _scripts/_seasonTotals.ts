@@ -98,6 +98,47 @@ const processGames = async (directory: string, start: string, end: string) => {
     // console.log("Team Advanced Stats");
     console.log(advancedStats);
   
+    // write to a file
+    const headers = Object.keys(advancedStats[0]);
+    // add player column
+    headers.unshift("player");
+    let csvString = headers.join(",") + "\n";
+
+    for (const player of Object.keys(advancedStats)) {        
+      let row;
+      try {
+        row = headers.map((header) => {
+            if (header === "player") {
+              return player;
+            }
+            const value = advancedStats[player][header];
+            // check if value is a number or a string
+            if(typeof value === "number"){
+              return value.toString();
+            }
+            if(typeof value === "string"){
+              return value;
+            }
+            return "0";
+      });
+      } catch (e) {
+        console.log(player, e);
+      }
+      if(row){
+        csvString += row.join(",") + "\n";
+      }
+    }
+    const seasonTotals = `seasonTotals/${start}-${end}.csv`
+
+    // check to see if the directory exists
+    try {
+      Deno.statSync("seasonTotals");
+    } catch (_e) {
+      await Deno.mkdir("seasonTotals");
+    }
+
+    await Deno.writeTextFile(seasonTotals, csvString);
+
 };
 
 const directory = "./files";
