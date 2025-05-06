@@ -1,5 +1,7 @@
 Half,time,team,player,event,against,notes
-1,0:02,1,37,2pt_attempt,,
+1,0:01,0,jeff,2pt_made,,
+1,0:02,0,jeff,2pt_made,,
+1,0:03,1,37,2pt_attempt,,
 1,0:04,0,tc,block,,highlight
 1,0:58,0,kelo,assist,,
 1,1:00,0,dylan,2pt_made,,
@@ -165,7 +167,7 @@ Half,time,team,player,event,against,notes
 2,11:56,0,chris,oreb,,
 2,12:14,0,tariq,turnover,,
 2,12:48,1,37,assist,,
-2,12:49,0,1,3pt_made,,
+2,12:49,1,1,3pt_made,,
 2,12:59,0,tariq,assist,,
 2,13:00,0,chris,2pt_made,,
 2,13:12,0,chosen,foul,,
