@@ -93,6 +93,7 @@ export function PlayerStats() {
     blocks: 0,
     turnovers: 0,
     fouls: 0,
+    charge: 0,
     trueShooting: 0,
     PER: 0,
   };
@@ -226,7 +227,7 @@ export function buildTeamStats(events: any[], game: string) : Record<string, Rec
     }
 
     if (row.event.trim() === "charge") {
-      console.log("charge")
+      teamStats[team][player]["charge"]++;
     }
 
     if (
@@ -267,13 +268,10 @@ export const assignMinutes = (stats: any) => {
   return statsWithMinutes;
 };
 
-export function TrueShooting(points: number, fga: number, fta: number): string {
-  if (fga + fta === 0) {
-    return "N/A"; // Avoid division by zero; applicable if no attempts are made.
-  }
-
-  const tsp = (points / (2 * (fga + 0.44 * fta))) * 100;
-  return tsp.toFixed(2) + "%"; // Returns the TSP as a percentage string rounded to two decimal places.
+export function trueShooting(points: number, fga: number, fta: number): number {
+  const denominator = 2 * (fga + 0.44 * fta);
+  if (denominator === 0) return 0;
+  return points / denominator;
 }
 
 export function playerEfficiencyRating(stats: PlayerStats): number {
@@ -294,7 +292,7 @@ export function playerEfficiencyRating(stats: PlayerStats): number {
 
   const rawPer =
     (stats.points + stats.rebounds + stats.assists + stats.steals +
-      stats.blocks - missedShots - stats.turnovers) / divisor;
+      stats.blocks + stats.charge - missedShots - stats.turnovers) / divisor;
 
   // Introduce a scaling factor to adjust the PER range
   const scale = 15; // This is a placeholder; adjust based on your data set and desired range
@@ -310,7 +308,7 @@ export function AdvancedStats(playerStats: Stats){
     // console.log(player, stats)
     stats.eFG = ((stats["2pt_made"] + stats["3pt_made"]) > 0) ? ((stats["2pt_made"] + 1.5 * stats["3pt_made"]) / (stats["2pt_made"] + stats["2pt_attempts"] + stats["3pt_made"] + stats["3pt_attempts"])) : 0;    
     const fga = stats["2pt_attempts"] + stats["2pt_made"] + stats["3pt_attempts"] + stats["3pt_made"];
-    // stats.trueShooting = TrueShooting(stats.points, fga, stats["ft_attempts"] + stats["ft_made"]) 
+    stats.trueShooting = trueShooting(stats.points, fga, stats.ft_attempts);
     stats.PER = playerEfficiencyRating(stats);
     playerStats[player] = stats;
   };
