@@ -67,8 +67,8 @@ async function processCsv(
   return csvString;
 }
 
-const inputFilePath = "./files/2025-07-17.csv";
-const outputFilePath = "./boxScores/2025/2025-07-17.csv";
+const inputFilePath = "./files/2025-07-24.csv";
+const outputFilePath = "./boxScores/2025/2025-07-24.csv";
 
 processCsv(inputFilePath, outputFilePath)
   .then((csv) =>  Deno.writeTextFile(outputFilePath, csv))
