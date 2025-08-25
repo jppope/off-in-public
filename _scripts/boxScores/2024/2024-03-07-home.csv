@@ -1,0 +1,8 @@
+player,points,rebounds,2pt_attempts,2pt_made,3pt_attempts,3pt_made,ft_attempts,ft_made,eFG,trueShooting,offensive_rebounds,defensive_rebounds,assists,steals,blocks,turnovers,PER
+ft_attempt,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+ft_made,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+3pt_attempt,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+defensive_rebound,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+foul,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+2pt_attempt,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+turnover,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

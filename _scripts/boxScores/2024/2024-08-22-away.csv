@@ -1,0 +1,8 @@
+player,points,rebounds,2pt_attempts,2pt_made,3pt_attempts,3pt_made,ft_attempts,ft_made,eFG,trueShooting,offensive_rebounds,defensive_rebounds,assists,steals,blocks,turnovers,PER
+1,2,0,1,1,5,0,0,0,0.14285714285714285,0.14285714285714285,0,0,0,0,0,0,-3.4285714285714284
+bigman,8,1,4,4,0,0,3,0,0.5,0.4291845493562232,1,0,0,0,0,0,9
+shooter,8,2,0,1,1,2,0,0,1,1,0,2,0,0,0,0,16
+pos,8,2,3,2,2,1,0,1,0.4375,0.5,1,1,0,0,0,0,6.4
+hair,0,0,1,0,1,0,1,0,0,0,0,0,0,0,0,1,-8
+---,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

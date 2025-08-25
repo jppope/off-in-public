@@ -281,7 +281,7 @@ export function playerEfficiencyRating(stats: PlayerStats): number {
   }
 
   // Calculate missed shots: Total attempts minus total made shots
-  const missedShots = stats["2pt_attempts"] + stats["3pt_attempts"];
+  const missedShots = (stats["2pt_attempts"] - stats["2pt_made"]) + (stats["3pt_attempts"] - stats["3pt_made"]);
 
   // Calculate the divisor to avoid division by zero. This represents the total impact actions.
   const divisor = stats.points + missedShots + stats.turnovers;
@@ -295,7 +295,7 @@ export function playerEfficiencyRating(stats: PlayerStats): number {
       stats.blocks + stats.charge - missedShots - stats.turnovers) / divisor;
 
   // Introduce a scaling factor to adjust the PER range
-  const scale = 15; // This is a placeholder; adjust based on your data set and desired range
+  const scale = 8; // Adjusted for competitive recreational league
   const scaledPer = rawPer * scale;
 
   return scaledPer;

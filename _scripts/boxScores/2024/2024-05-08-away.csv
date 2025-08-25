@@ -1,0 +1,7 @@
+player,points,rebounds,2pt_attempts,2pt_made,3pt_attempts,3pt_made,ft_attempts,ft_made,eFG,trueShooting,offensive_rebounds,defensive_rebounds,assists,steals,blocks,turnovers,PER
+player11,4,4,5,2,4,0,0,0,0.18181818181818182,0.18181818181818182,0,4,0,0,0,2,-0.6153846153846154
+player3,12,12,6,6,4,0,0,0,0.375,0.375,7,5,0,1,1,1,9.882352941176471
+player1,4,2,6,2,2,0,0,0,0.2,0.2,2,0,0,0,0,0,0
+marcus,26,2,5,7,10,4,0,0,0.5,0.5,0,2,0,0,0,4,4.705882352941177
+player2,7,5,2,2,4,1,0,0,0.3888888888888889,0.3888888888888889,2,3,0,0,0,1,5.818181818181818
+,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

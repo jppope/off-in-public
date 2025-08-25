@@ -1,0 +1,6 @@
+player,points,rebounds,2pt_attempts,2pt_made,3pt_attempts,3pt_made,ft_attempts,ft_made,eFG,trueShooting,offensive_rebounds,defensive_rebounds,assists,steals,blocks,turnovers,PER
+0,6,0,0,2,1,0,0,2,0.6666666666666666,1,0,0,0,0,0,0,11.2
+3,2,0,1,1,2,0,0,0,0.25,0.25,0,0,0,0,0,0,0
+12,13,0,3,3,1,2,1,1,0.6666666666666666,0.6885593220338984,0,0,0,0,0,0,9.333333333333334
+headband,12,1,5,3,2,2,0,0,0.5,0.5,1,0,0,0,0,0,6.285714285714286
+00,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,-8
