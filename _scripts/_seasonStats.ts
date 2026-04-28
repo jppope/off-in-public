@@ -80,35 +80,38 @@ async function parseBoxScoreFile(filePath: string): Promise<PlayerGameStats[]> {
   const content = await Deno.readTextFile(filePath);
   const rows: any[] = await parse(content);
   const headers = rows.shift();
-  
+
   const gameStats: PlayerGameStats[] = [];
-  
+
   for (const row of rows) {
-    if (row[0] && row[0].trim() !== '') { // Skip empty rows
-      const stats: PlayerGameStats = {
-        player: row[0],
-        points: parseFloat(row[1]) || 0,
-        rebounds: parseFloat(row[2]) || 0,
-        "2pt_attempts": parseFloat(row[3]) || 0,
-        "2pt_made": parseFloat(row[4]) || 0,
-        "3pt_attempts": parseFloat(row[5]) || 0,
-        "3pt_made": parseFloat(row[6]) || 0,
-        "ft_attempts": parseFloat(row[7]) || 0,
-        "ft_made": parseFloat(row[8]) || 0,
-        eFG: parseFloat(row[9]) || 0,
-        trueShooting: parseFloat(row[10]) || 0,
-        offensive_rebounds: parseFloat(row[11]) || 0,
-        defensive_rebounds: parseFloat(row[12]) || 0,
-        assists: parseFloat(row[13]) || 0,
-        steals: parseFloat(row[14]) || 0,
-        blocks: parseFloat(row[15]) || 0,
-        turnovers: parseFloat(row[16]) || 0,
-        PER: parseFloat(row[17]) || 0,
-      };
-      gameStats.push(stats);
-    }
+    if (!row || !row[0] || row[0].trim() === '') continue;
+    // Convert row to object using headers
+    const obj: Record<string, string> = {};
+    headers.forEach((h: string, idx: number) => {
+      obj[h.trim()] = row[idx];
+    });
+    const stats: PlayerGameStats = {
+      player: obj["player"] || "",
+      points: parseFloat(obj["points"]) || 0,
+      rebounds: parseFloat(obj["rebounds"]) || 0,
+      "2pt_attempts": parseFloat(obj["2pt_attempts"]) || 0,
+      "2pt_made": parseFloat(obj["2pt_made"]) || 0,
+      "3pt_attempts": parseFloat(obj["3pt_attempts"]) || 0,
+      "3pt_made": parseFloat(obj["3pt_made"]) || 0,
+      "ft_attempts": parseFloat(obj["ft_attempts"]) || 0,
+      "ft_made": parseFloat(obj["ft_made"]) || 0,
+      eFG: parseFloat(obj["eFG"]) || 0,
+      trueShooting: parseFloat(obj["trueShooting"]) || 0,
+      offensive_rebounds: parseFloat(obj["offensive_rebounds"]) || 0,
+      defensive_rebounds: parseFloat(obj["defensive_rebounds"]) || 0,
+      assists: parseFloat(obj["assists"]) || 0,
+      steals: parseFloat(obj["steals"]) || 0,
+      blocks: parseFloat(obj["blocks"]) || 0,
+      turnovers: parseFloat(obj["turnovers"]) || 0,
+      PER: parseFloat(obj["PER"]) || 0,
+    };
+    gameStats.push(stats);
   }
-  
   return gameStats;
 }
 
